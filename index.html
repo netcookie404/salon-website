@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kapilla Salon - Modern Style & Elegance</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        /* Custom styles if needed, or can be configured in tailwind.config.js */
+        body {
+            font-family: 'Inter', sans-serif; /* Example: Using a clean sans-serif font */
+        }
+        /* Add fallback fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        .font-display {
+            font-family: 'Playfair Display', serif; /* A more elegant font for headings */
+        }
+        /* Style for the Three.js canvas container */
+        #threejs-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden; /* Ensure canvas doesn't overflow */
+        }
+        #hero-content {
+            position: relative;
+            z-index: 1; /* Ensure text is above the canvas */
+        }
+
+        /* Simple scrollbar styling (optional) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+    <script>
+      // Optional: Define custom colors for Tailwind (better done in tailwind.config.js)
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-primary': '#A0522D', // Sienna - adjust as needed
+              'brand-secondary': '#F5F5DC', // Beige
+              'brand-dark': '#363636', // Dark Gray
+              'brand-light': '#FFF8DC', // Cornsilk
+              'brand-accent': '#D2B48C', // Tan
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              display: ['Playfair Display', 'serif'],
+            },
+          }
+        }
+      }
+    </script>
+
+</head>
+
+<body class="bg-brand-light text-brand-dark antialiased">
+
+    <header x-data="{ mobileMenuOpen: false }" class="bg-white/90 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-display font-bold text-brand-primary">
+                Kapilla Salon
+            </a>
+
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#home" class="text-brand-dark hover:text-brand-primary transition duration-300">Home</a>
+                <a href="#about" class="text-brand-dark hover:text-brand-primary transition duration-300">About</a>
+                <a href="#services" class="text-brand-dark hover:text-brand-primary transition duration-300">Services</a>
+                 <a href="#team" class="text-brand-dark hover:text-brand-primary transition duration-300">Our Team</a>
+                <a href="#gallery" class="text-brand-dark hover:text-brand-primary transition duration-300">Gallery</a>
+                <a href="#contact" class="text-brand-dark hover:text-brand-primary transition duration-300">Contact</a>
+                <a href="#booking" class="bg-brand-primary text-white px-5 py-2 rounded-full hover:bg-opacity-90 transition duration-300 text-sm font-medium shadow">
+                    Book Now
+                </a>
+            </div>
+
+            <div class="md:hidden">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-brand-dark focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform -translate-y-4" class="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 z-40">
+            <a href="#home" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">Home</a>
+            <a href="#about" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">About</a>
+            <a href="#services" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">Services</a>
+            <a href="#team" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">Our Team</a>
+            <a href="#gallery" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">Gallery</a>
+            <a href="#contact" @click="mobileMenuOpen = false" class="block px-6 py-2 text-brand-dark hover:bg-brand-light transition duration-300">Contact</a>
+            <a href="#booking" @click="mobileMenuOpen = false" class="block px-6 py-3 mt-2 text-center bg-brand-primary text-white rounded-md mx-4 hover:bg-opacity-90 transition duration-300 font-medium">
+                Book Now
+            </a>
+        </div>
+    </header>
+
+    <section id="home" class="relative min-h-screen flex items-center justify-center text-center bg-gradient-to-br from-brand-secondary via-brand-light to-brand-accent pt-20">
+        <div id="threejs-container">
+            </div>
+
+        <div id="hero-content" class="container mx-auto px-6 py-16 text-brand-dark">
+            <h1 class="text-5xl md:text-7xl font-display font-bold mb-4 leading-tight">
+                Kapilla Salon
+            </h1>
+            <p class="text-xl md:text-2xl text-brand-dark mb-8 font-light">
+                Where Your Beauty Shines Brightest
+            </p>
+            <p class="text-lg mb-10 max-w-2xl mx-auto">
+                Experience bespoke hair artistry, rejuvenating skin treatments, and unparalleled style in a serene, luxurious setting.
+            </p>
+            <a href="#booking" class="bg-brand-primary text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition duration-300 text-lg font-medium shadow-lg">
+                Schedule Your Transformation
+            </a>
+        </div>
+    </section>
+
+    <section id="about" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6 max-w-5xl grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="bg-brand-secondary h-80 rounded-lg shadow-md flex items-center justify-center text-brand-accent">
+                     <span class="italic">About Us Image Area</span>
+                 </div>
+            </div>
+            <div class="text-left">
+                <h2 class="text-3xl md:text-4xl font-display font-bold mb-6 text-brand-primary">
+                    Discover Kapilla
+                </h2>
+                <p class="text-lg mb-4 leading-relaxed text-gray-700">
+                    At <strong>Kapilla Salon</strong>, we blend artistry with expertise. We believe that true beauty radiates from confidence, and our mission is to craft the look that empowers you.
+                </p>
+                <p class="mb-4 leading-relaxed text-gray-600">
+                    Nestled in a tranquil environment, our salon is your sanctuary for transformation. Our dedicated professionals, armed with years of experience and a passion for style, use premium products and techniques to deliver exceptional results.
+                </p>
+                <p class="leading-relaxed text-gray-600">
+                    From precision cuts and vibrant color to restorative treatments and elegant styling, we tailor every service to your unique needs and desires. Step into Kapilla and step out feeling renewed, radiant, and utterly confident.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="py-20 md:py-28 bg-brand-light">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-4 text-brand-primary">Our Signature Services</h2>
+            <p class="text-lg mb-12 max-w-2xl mx-auto text-gray-600">
+                Indulge in a range of services designed to pamper, perfect, and personalize your look.
+            </p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                    <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M17.707 9.293l-7-7a1 1 0 00-1.414 0l-7 7A1 1 0 003 11h14a1 1 0 00.707-1.707zM6 12h8v2h-2v4H8v-4H6v-2z"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Precision Haircuts</h3>
+                    <p class="text-gray-600 leading-relaxed">Expert cuts tailored to your face shape, lifestyle, and vision. For men, women, and children.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                     <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Artistic Hair Coloring</h3>
+                    <p class="text-gray-600 leading-relaxed">From subtle highlights to bold transformations, using premium, hair-loving color lines.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                     <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3.5a.5.5 0 01.5.5v1a.5.5 0 01-1 0v-1a.5.5 0 01.5-.5zM10 15.5a.5.5 0 01.5.5v1a.5.5 0 01-1 0v-1a.5.5 0 01.5-.5zM4.134 5.866a.5.5 0 01.707-.707l.707.707a.5.5 0 01-.707.707l-.707-.707zm11.032 8.368a.5.5 0 01.707-.707l.707.707a.5.5 0 01-.707.707l-.707-.707zm-9.06 2.134a.5.5 0 01.707 0l.707-.707a.5.5 0 01.707.707l-.707.707a.5.5 0 01-.707 0zm9.06-11.032a.5.5 0 01.707 0l.707-.707a.5.5 0 01.707.707l-.707.707a.5.5 0 01-.707 0zM15.5 10a.5.5 0 01.5-.5h1a.5.5 0 010 1h-1a.5.5 0 01-.5-.5zM3.5 10a.5.5 0 01.5-.5h1a.5.5 0 010 1h-1a.5.5 0 01-.5-.5zm7-6a6 6 0 100 12 6 6 0 000-12z"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Rejuvenating Facials</h3>
+                    <p class="text-gray-600 leading-relaxed">Customized facials targeting your specific skin concerns for a radiant, healthy glow.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                     <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Bridal & Event Styling</h3>
+                    <p class="text-gray-600 leading-relaxed">Look stunning on your special day with bespoke hair and makeup packages.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                    <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Men's Grooming</h3>
+                    <p class="text-gray-600 leading-relaxed">Sharp cuts, beard trims, and styling designed for the modern gentleman.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition duration-300 text-left transform hover:-translate-y-1">
+                     <div class="text-brand-primary mb-4"> <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 7a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1zm4 0a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg> </div>
+                    <h3 class="text-xl font-semibold mb-3 font-display text-brand-dark">Hair & Scalp Treatments</h3>
+                    <p class="text-gray-600 leading-relaxed">Deep conditioning, repair, and revitalizing treatments for healthy, luscious hair.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="why" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6 text-center">
+             <h2 class="text-3xl md:text-4xl font-display font-bold mb-12 text-brand-primary">The Kapilla Difference</h2>
+             <div class="grid md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+                <div class="text-center p-6">
+                     <div class="inline-block bg-brand-secondary p-4 rounded-full mb-4">
+                         <svg class="w-10 h-10 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                     </div>
+                    <h3 class="text-xl font-semibold mb-2 font-display text-brand-dark">Expert Stylists</h3>
+                    <p class="text-gray-600">Our team comprises passionate, highly trained professionals dedicated to their craft.</p>
+                </div>
+                 <div class="text-center p-6">
+                     <div class="inline-block bg-brand-secondary p-4 rounded-full mb-4">
+                         <svg class="w-10 h-10 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                     </div>
+                    <h3 class="text-xl font-semibold mb-2 font-display text-brand-dark">Premium Products</h3>
+                    <p class="text-gray-600">We exclusively use high-quality, professional products for optimal results and hair health.</p>
+                </div>
+                 <div class="text-center p-6">
+                     <div class="inline-block bg-brand-secondary p-4 rounded-full mb-4">
+                        <svg class="w-10 h-10 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                     </div>
+                    <h3 class="text-xl font-semibold mb-2 font-display text-brand-dark">Relaxing Atmosphere</h3>
+                    <p class="text-gray-600">Enjoy our services in a calm, luxurious environment designed for your comfort.</p>
+                </div>
+             </div>
+        </div>
+    </section>
+
+    <section id="team" class="py-20 md:py-28 bg-brand-light">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-12 text-brand-primary">Meet Our Stylists</h2>
+             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300">
+                    <div class="w-24 h-24 rounded-full bg-brand-secondary mx-auto mb-4 flex items-center justify-center text-brand-accent italic text-sm">Stylist Photo</div>
+                    <h4 class="text-lg font-semibold font-display text-brand-dark">Alex Rivera</h4>
+                    <p class="text-brand-primary text-sm mb-2">Master Colorist</p>
+                    <p class="text-gray-600 text-sm">Specializes in balayage and creative color techniques.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300">
+                    <div class="w-24 h-24 rounded-full bg-brand-secondary mx-auto mb-4 flex items-center justify-center text-brand-accent italic text-sm">Stylist Photo</div>
+                    <h4 class="text-lg font-semibold font-display text-brand-dark">Jamie Chen</h4>
+                    <p class="text-brand-primary text-sm mb-2">Lead Stylist</p>
+                    <p class="text-gray-600 text-sm">Expert in precision cutting and modern styles.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300">
+                    <div class="w-24 h-24 rounded-full bg-brand-secondary mx-auto mb-4 flex items-center justify-center text-brand-accent italic text-sm">Stylist Photo</div>
+                    <h4 class="text-lg font-semibold font-display text-brand-dark">Maria Garcia</h4>
+                    <p class="text-brand-primary text-sm mb-2">Esthetician & Stylist</p>
+                    <p class="text-gray-600 text-sm">Facial expert and skilled in event updos.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-xl transition duration-300">
+                    <div class="w-24 h-24 rounded-full bg-brand-secondary mx-auto mb-4 flex items-center justify-center text-brand-accent italic text-sm">Stylist Photo</div>
+                    <h4 class="text-lg font-semibold font-display text-brand-dark">Sam Patel</h4>
+                    <p class="text-brand-primary text-sm mb-2">Barber & Men's Stylist</p>
+                    <p class="text-gray-600 text-sm">Specializes in men's cuts and beard grooming.</p>
+                </div>
+             </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6 max-w-4xl text-center">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-12 text-brand-primary">What Our Clients Say</h2>
+             <div class="space-y-8">
+                 <blockquote class="bg-brand-light p-8 rounded-lg shadow-inner relative">
+                    <p class="text-lg italic text-gray-700 mb-4 leading-relaxed">"Kapilla is my go-to salon! The atmosphere is so relaxing, and my hair has never looked better. Alex is a true color wizard!"</p>
+                    <footer class="text-right text-gray-600 font-medium">- Sarah L.</footer>
+                    <div class="absolute top-0 left-0 text-6xl text-brand-primary opacity-10 transform -translate-x-2 -translate-y-2">&ldquo;</div>
+                 </blockquote>
+                 <blockquote class="bg-brand-light p-8 rounded-lg shadow-inner relative">
+                    <p class="text-lg italic text-gray-700 mb-4 leading-relaxed">"Professional, friendly, and incredibly skilled. I always leave feeling confident and refreshed. Highly recommend the men's grooming services."</p>
+                    <footer class="text-right text-gray-600 font-medium">- David K.</footer>
+                     <div class="absolute top-0 left-0 text-6xl text-brand-primary opacity-10 transform -translate-x-2 -translate-y-2">&ldquo;</div>
+                 </blockquote>
+             </div>
+             </div>
+    </section>
+
+     <section id="gallery" class="py-20 md:py-28 bg-brand-light">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-12 text-brand-primary">Style Gallery</h2>
+            <p class="text-lg mb-8 max-w-2xl mx-auto text-gray-600">
+                Get inspired by some of our favorite transformations.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                 <div class="bg-brand-secondary h-48 md:h-64 rounded-lg shadow-md flex items-center justify-center text-brand-accent italic">Image 1</div>
+                 <div class="bg-brand-secondary h-48 md:h-64 rounded-lg shadow-md flex items-center justify-center text-brand-accent italic">Image 2</div>
+                 <div class="bg-brand-secondary h-48 md:h-64 rounded-lg shadow-md flex items-center justify-center text-brand-accent italic">Image 3</div>
+                 <div class="bg-brand-secondary h-48 md:h-64 rounded-lg shadow-md flex items-center justify-center text-brand-accent italic">Image 4</div>
+                 </div>
+            <a href="#" class="inline-block mt-10 text-brand-primary hover:underline font-medium">
+                View More on Instagram &rarr; </a>
+        </div>
+    </section>
+
+
+    <section id="booking" class="py-20 md:py-28 bg-gradient-to-r from-brand-primary to-brand-accent text-white">
+         <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-6">Ready for Your Transformation?</h2>
+            <p class="text-lg mb-8 max-w-xl mx-auto font-light">
+                Book your appointment today and discover the Kapilla difference. We can't wait to welcome you!
+            </p>
+            <a href="#contact" class="bg-white text-brand-primary px-8 py-3 rounded-full hover:bg-opacity-90 transition duration-300 text-lg font-semibold shadow-lg">
+                Book an Appointment
+            </a>
+             <p class="mt-6 text-sm opacity-90">Or call us at: <strong>077 456 7890</strong></p>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 md:py-28 bg-white">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-display font-bold mb-10 text-center text-brand-primary">Get In Touch</h2>
+             <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                     <h3 class="text-2xl font-semibold font-display mb-6 text-brand-dark">Contact Details</h3>
+                     <p class="mb-4 text-gray-700 flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-brand-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                         <strong>Phone:</strong>&nbsp; <a href="tel:0774567890" class="hover:underline">077 456 7890</a>
+                     </p>
+                     <p class="mb-4 text-gray-700 flex items-center">
+                        <svg class="w-5 h-5 mr-3 text-brand-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 11.884l7.997-6M2 14h16a2 2 0 002-2V6a2 2 0 00-2-2H2a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                         <strong>Email:</strong>&nbsp; <a href="mailto:kapillasalon@example.com" class="hover:underline">kapillasalon@example.com</a>
+                     </p>
+                     <p class="mb-6 text-gray-700 flex items-start">
+                         <svg class="w-5 h-5 mr-3 text-brand-primary mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                         <span>
+                             <strong>Address:</strong><br>
+                             123 Beauty Lane,<br>
+                             Style City, SC 54321 <br>
+                             (Your Full Address Here)
+                         </span>
+                     </p>
+                      <h4 class="text-xl font-semibold font-display mb-4 text-brand-dark">Opening Hours</h4>
+                      <p class="text-gray-600">Mon - Fri: 9:00 AM - 7:00 PM</p>
+                      <p class="text-gray-600">Saturday: 10:00 AM - 6:00 PM</p>
+                      <p class="text-gray-600">Sunday: Closed</p>
+                      <div class="mt-6 bg-brand-secondary h-48 rounded-lg flex items-center justify-center text-brand-accent italic">
+                           Map Area Placeholder
+                       </div>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-semibold font-display mb-6 text-brand-dark">Send Us a Message</h3>
+                    <form action="#" method="POST" class="space-y-5">
+                        <div>
+                            <label for="name" class="sr-only">Your Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent transition duration-300" required />
+                        </div>
+                        <div>
+                            <label for="email" class="sr-only">Your Email</label>
+                            <input type="email" id="email" name="email" placeholder="Your Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent transition duration-300" required />
+                        </div>
+                         <div>
+                            <label for="subject" class="sr-only">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="Subject (e.g., Booking Inquiry)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent transition duration-300" />
+                        </div>
+                        <div>
+                            <label for="message" class="sr-only">Your Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Your Message" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent transition duration-300" required></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" class="w-full bg-brand-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition duration-300 font-medium shadow">
+                                Send Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-brand-dark text-brand-light py-10">
+        <div class="container mx-auto px-6 text-center md:text-left">
+             <div class="grid md:grid-cols-3 gap-8 mb-8">
+                 <div>
+                    <h4 class="text-xl font-display font-semibold mb-4 text-white">Kapilla Salon</h4>
+                    <p class="text-sm text-gray-400 leading-relaxed">Crafting beauty and confidence through exceptional hair and skin care.</p>
+                     <div class="flex space-x-4 mt-4 justify-center md:justify-start">
+                         <a href="#" class="text-gray-400 hover:text-white transition duration-300">#FB</a>
+                         <a href="#" class="text-gray-400 hover:text-white transition duration-300">#IG</a>
+                         <a href="#" class="text-gray-400 hover:text-white transition duration-300">#TW</a>
+                     </div>
+                </div>
+                 <div>
+                     <h5 class="text-lg font-semibold mb-4 text-white">Quick Links</h5>
+                     <ul class="space-y-2">
+                         <li><a href="#about" class="text-sm text-gray-400 hover:text-white hover:underline transition">About Us</a></li>
+                         <li><a href="#services" class="text-sm text-gray-400 hover:text-white hover:underline transition">Services</a></li>
+                         <li><a href="#team" class="text-sm text-gray-400 hover:text-white hover:underline transition">Our Team</a></li>
+                         <li><a href="#contact" class="text-sm text-gray-400 hover:text-white hover:underline transition">Contact</a></li>
+                         <li><a href="#booking" class="text-sm text-gray-400 hover:text-white hover:underline transition">Book Now</a></li>
+                     </ul>
+                 </div>
+                 <div>
+                      <h5 class="text-lg font-semibold mb-4 text-white">Contact Info</h5>
+                     <ul class="space-y-2 text-sm text-gray-400">
+                        <li>Phone: <a href="tel:0774567890" class="hover:text-white hover:underline">077 456 7890</a></li>
+                        <li>Email: <a href="mailto:kapillasalon@example.com" class="hover:text-white hover:underline">kapillasalon@example.com</a></li>
+                        <li>Address: 123 Beauty Lane, Style City</li>
+                     </ul>
+                 </div>
+             </div>
+            <div class="border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
+                &copy; 2025 Kapilla Salon. All rights reserved. | <a href="#" class="hover:underline">Privacy Policy</a> | <a href="#" class="hover:underline">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.163.0/build/three.module.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+
+        // --- Three.js Scene Setup ---
+        const container = document.getElementById('threejs-container');
+        if (container) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); // alpha:true for transparent background
+
+            renderer.setSize(container.offsetWidth, container.offsetHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // --- Example: Simple Animated Geometry ---
+            // Replace this with your desired animation (particles, waves, abstract shapes etc.)
+            const geometry = new THREE.IcosahedronGeometry(2.5, 1); // Example shape
+             // Use a material that looks good without complex lighting setup initially
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xA0522D, // brand-primary color
+                wireframe: true, // Simple wireframe look
+                transparent: true,
+                opacity: 0.3 // Make it subtle
+            });
+            const shape = new THREE.Mesh(geometry, material);
+            scene.add(shape);
+
+            camera.position.z = 5;
+
+            // --- Responsiveness ---
+            window.addEventListener('resize', onWindowResize, false);
+            function onWindowResize() {
+                if (container) {
+                    camera.aspect = container.offsetWidth / container.offsetHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.offsetWidth, container.offsetHeight);
+                }
+            }
+
+            // --- Animation Loop ---
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Example animation: Gentle rotation
+                shape.rotation.x += 0.001;
+                shape.rotation.y += 0.0015;
+
+                renderer.render(scene, camera);
+            }
+
+            // Ensure the initial size is set correctly after layout calculation
+            setTimeout(() => {
+                 onWindowResize();
+                 animate(); // Start animation after potential layout shifts
+            }, 100); // Small delay
+
+        } else {
+            console.error("Three.js container not found");
+        }
+
+        // --- p5.js Placeholder ---
+        // If you want to use p5.js for another effect (e.g., subtle background pattern):
+        // 1. Include the p5.js library: <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+        // 2. Create a p5 sketch instance, target a specific div or canvas element.
+        /*
+        const sketch = (p) => {
+            p.setup = () => {
+                // p.createCanvas(p.windowWidth, p.windowHeight).parent('p5-container-id');
+                // ... setup code
+            };
+            p.draw = () => {
+                // ... drawing code (e.g., animated background patterns)
+            };
+        };
+        // new p5(sketch);
+        */
+
+        // --- Other JS (e.g., for scroll animations if needed) ---
+        // You might use Intersection Observer API here to trigger animations on scroll.
+
+    </script>
+
+</body>
+</html>
